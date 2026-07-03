@@ -20,6 +20,11 @@
   --status-critical: #d03b3b;
   --status-critical-wash: #fbe9e9;
 
+  /* Fixed categorical order (never cycled/reassigned per sort) */
+  --series-1: #2a78d6;
+  --series-2: #1baf7a;
+  --series-3: #eda100;
+
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 14px;
@@ -57,6 +62,10 @@
   --status-warning-wash: rgba(230, 172, 58, 0.14);
   --status-critical: #ef6464;
   --status-critical-wash: rgba(239, 100, 100, 0.14);
+
+  --series-1: #3987e5;
+  --series-2: #199e70;
+  --series-3: #c98500;
 
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
   --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.36);
@@ -248,7 +257,6 @@ table {
 
 .content {
   padding: 28px 32px 60px;
-  max-width: 1080px;
 }
 
 /* ---------- primitives ---------- */
@@ -439,11 +447,15 @@ table {
   letter-spacing: 0.04em;
   border-bottom: 1px solid var(--border);
   background: var(--surface-2);
+  position: sticky;
+  top: 0;
+  z-index: 1;
 }
 
 .data-table td {
   padding: 12px 16px;
   border-bottom: 1px solid var(--border);
+  vertical-align: middle;
 }
 
 .data-table tbody tr {

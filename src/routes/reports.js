@@ -22,23 +22,30 @@ export default async function reportRoutes(fastify) {
 
   // Sessions list enriched with the latest language/escalation flags logged
   // for that sessionId, so the dashboard doesn't need to cross-reference
-  // /reports/interactions itself.
+  // /reports/interactions itself. Sessions where no language was ever
+  // detected at all (e.g. the call/chat ended before report_language fired)
+  // are left out entirely, rather than shown as "unknown" - but a session
+  // where the detected language IS an unsupported one (e.g. French) still
+  // shows up here, since that's exactly the real Fallback/Escalated case,
+  // just not counted in the Overview chart's known-language bars.
   fastify.get('/reports/sessions', async () => {
     const interactions = getRecentInteractions(500);
 
-    return listSessions().map((session) => {
-      const related = interactions.filter((i) => i.sessionId === session.sessionId);
-      const lastWithLanguage = [...related].reverse().find((i) => i.detectedLanguage);
+    return listSessions()
+      .map((session) => {
+        const related = interactions.filter((i) => i.sessionId === session.sessionId);
+        const lastWithLanguage = [...related].reverse().find((i) => i.detectedLanguage);
 
-      return {
-        ...session,
-        detectedLanguage: lastWithLanguage?.detectedLanguage ?? null,
-        confidence: lastWithLanguage?.confidence ?? null,
-        escalated: related.some((i) => i.escalated),
-        usedFallback: related.some((i) => i.usedFallback),
-        override: related.some((i) => i.override),
-      };
-    });
+        return {
+          ...session,
+          detectedLanguage: lastWithLanguage?.detectedLanguage ?? null,
+          confidence: lastWithLanguage?.confidence ?? null,
+          escalated: related.some((i) => i.escalated),
+          usedFallback: related.some((i) => i.usedFallback),
+          override: related.some((i) => i.override),
+        };
+      })
+      .filter((session) => Boolean(session.detectedLanguage));
   });
 
   fastify.get('/reports/sessions/:sessionId', async (request, reply) => {

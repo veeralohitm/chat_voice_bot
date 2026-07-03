@@ -127,41 +127,45 @@ export function Sessions() {
       {error && <div className="error-text" style={{ marginBottom: 12 }}>Failed to load: {error}</div>}
 
       <div className="card" style={{ overflow: 'hidden' }}>
-        <table className="data-table">
-          <thead>
-            <tr>
-              <th>Channel</th>
-              <th>Account</th>
-              <th>Language</th>
-              <th>Turns</th>
-              <th>Updated</th>
-              <th>Flags</th>
-            </tr>
-          </thead>
-          <tbody>
-            {sessions.map((s) => (
-              <tr key={s.sessionId} onClick={() => setSelectedId(s.sessionId)}>
-                <td style={{ textTransform: 'capitalize' }}>{s.channel}</td>
-                <td>{s.accountKey}</td>
-                <td>{namesByCode[s.detectedLanguage] || s.detectedLanguage || '—'}</td>
-                <td className="tabular">{s.turnCount}</td>
-                <td className="muted">{formatTime(s.updatedAt)}</td>
-                <td style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                  {s.escalated && <Badge tone="critical">Escalated</Badge>}
-                  {s.usedFallback && <Badge tone="warning">Fallback</Badge>}
-                  {s.override && <Badge tone="good">Override</Badge>}
-                </td>
-              </tr>
-            ))}
-            {sessions.length === 0 && !error && (
+        <div style={{ maxHeight: 420, overflowY: 'auto' }}>
+          <table className="data-table">
+            <thead>
               <tr>
-                <td colSpan={6} className="muted">
-                  No sessions yet.
-                </td>
+                <th>Channel</th>
+                <th>Account</th>
+                <th>Language</th>
+                <th>Turns</th>
+                <th>Updated</th>
+                <th>Flags</th>
               </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {sessions.map((s) => (
+                <tr key={s.sessionId} onClick={() => setSelectedId(s.sessionId)}>
+                  <td style={{ textTransform: 'capitalize' }}>{s.channel}</td>
+                  <td>{s.accountKey}</td>
+                  <td>{namesByCode[s.detectedLanguage] || s.detectedLanguage || '—'}</td>
+                  <td className="tabular">{s.turnCount}</td>
+                  <td className="muted">{formatTime(s.updatedAt)}</td>
+                  <td>
+                    <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                      {s.escalated && <Badge tone="critical">Escalated</Badge>}
+                      {s.usedFallback && <Badge tone="warning">Fallback</Badge>}
+                      {s.override && <Badge tone="good">Override</Badge>}
+                    </div>
+                  </td>
+                </tr>
+              ))}
+              {sessions.length === 0 && !error && (
+                <tr>
+                  <td colSpan={6} className="muted">
+                    No sessions yet.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {selectedId && <TranscriptPanel sessionId={selectedId} onClose={() => setSelectedId(null)} />}

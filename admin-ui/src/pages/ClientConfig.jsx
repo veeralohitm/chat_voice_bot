@@ -211,7 +211,7 @@ export function ClientConfig() {
   return (
     <div>
       <AddClientForm existingKeys={clients.map((c) => c.accountKey)} onAdded={handleAdded} />
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12, maxHeight: 480, overflowY: 'auto', paddingRight: 4 }}>
         {clients.length === 0 && (
           <div className="card card-pad muted" style={{ fontSize: 13.5 }}>
             No client accounts yet - add one above, using the Twilio phone number as the account key, or it will be

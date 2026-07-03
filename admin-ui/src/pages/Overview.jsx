@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { api } from '../api';
 import { StatTile } from '../components/StatTile';
-import { LanguageVolumeChart } from '../components/LanguageVolumeChart';
+import { LanguageDonutChart } from '../components/LanguageDonutChart';
 
 function IconChat() {
   return (
@@ -65,16 +65,13 @@ export function Overview() {
     );
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-      <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap' }}>
-        <StatTile label="Total interactions" value={summary.totalInteractions} icon={<IconChat />} />
-        <StatTile label="Escalated to human" value={summary.totalEscalations} icon={<IconAlert />} />
-        <StatTile label="Used fallback language" value={summary.totalFallbacks} icon={<IconGlobe />} />
-      </div>
-
-      <div className="card card-pad">
-        <h2 className="section-title">Interaction volume by language</h2>
-        <LanguageVolumeChart volumeByLanguage={summary.volumeByLanguage} />
+    <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap' }}>
+      <StatTile label="Total interactions" value={summary.totalInteractions} icon={<IconChat />} />
+      <StatTile label="Escalated to human" value={summary.totalEscalations} icon={<IconAlert />} />
+      <StatTile label="Used fallback language" value={summary.totalFallbacks} icon={<IconGlobe />} />
+      <div className="card card-pad" style={{ flex: '1 1 180px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <span className="muted" style={{ fontSize: 12.5 }}>By language</span>
+        <LanguageDonutChart volumeByLanguage={summary.volumeByLanguage} />
       </div>
     </div>
   );

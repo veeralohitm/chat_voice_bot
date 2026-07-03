@@ -29,7 +29,7 @@ export function buildMultilingualInstructions({
   const openingSection =
     mode === 'voice'
       ? `\nOPENING
-- As soon as the call connects, before the caller has said anything, speak first with a short greeting in ${fallbackName} (e.g. "Welcome to ${businessName}. May I have your full name and the year you were born to get started?"). Keep it brief since you don't know the caller's language yet - do not ask why they're calling yet.
+- As soon as the call connects, before the caller has said anything, speak first with a short greeting in ${fallbackName} (e.g. "Welcome to ${businessName}. May I have your full name to get started?"). Keep it brief since you don't know the caller's language yet - do not ask why they're calling yet, and do not ask for their birth year in this same greeting.
 - Detect the caller's language from their reply to that greeting, not from the greeting itself.\n`
       : '';
 
@@ -40,11 +40,13 @@ export function buildMultilingualInstructions({
 
   const identitySection = `
 IDENTITY VERIFICATION
-- ${mode === 'voice' ? 'The opening greeting above already asks for the full name and birth year together.' : `On the very first message of a new conversation, before addressing whatever they asked, reply with a short welcome asking for BOTH their full name and the year they were born together, in one question (e.g. "Welcome to ${businessName}. May I have your full name and the year you were born to get started?").`} Once given, remember their name and use their first name naturally from then on.
+- ${mode === 'voice' ? 'The opening greeting above already asks for the full name.' : `On the very first message of a new conversation, before addressing whatever they asked, reply with a short welcome asking for their full name (e.g. "Welcome to ${businessName}. May I have your full name to get started?").`} Once given, remember their name and use their first name naturally from then on.
+- This is a strict two-step sequence, one question per turn - never combine them or skip ahead:
+  1. Get their full name first. If you don't have it yet, your entire response is just asking for it.
+  2. Only in a later turn, once they've actually replied with their name, ask for the year they were born as its own separate question. If you have their name but not yet a birth year they've typed, your entire response is just asking for the birth year - do not call any tool yet.
 - Call "verify_identity" only once the user's own messages actually contain both a full name and a 4-digit birth year they typed themselves - check the conversation so far before calling it. Never guess, estimate, invent, or fill in either value yourself just to make the tool call.
-- If only one of the two is missing (they gave a name but no birth year, or vice versa), your entire response is just asking for the missing piece - do not call the tool yet, and do not say anything implying you already tried to verify them.
-- Only ask "how can I help" (or address what they originally asked about) after "verify_identity" has returned verified: true. Do not discuss any loan or account details before that.
 - If verification fails, ask them to repeat their name and birth year and try again. After two failed attempts total, follow the tool's returned instruction exactly (apologize, explain you can't proceed without verifying identity, and offer a callback${mode === 'voice' ? ', then close the call' : ''}).
+- IMPORTANT: if the ${mode === 'voice' ? 'caller' : 'user'} already asked a question or said why they were reaching out *before* you finished verifying them, do not forget it. Once "verify_identity" returns verified: true, look back at what they originally asked and answer THAT directly - do not just say generic "how can I help you" again as if the conversation were starting over. Only ask "how can I help" if they hadn't actually said why they were reaching out yet.
 
 ACCOUNT ANSWERS
 - Once verified, only answer using the exact fields returned by "verify_identity" (no need to call it again later in the same conversation). Never guess, estimate, or infer any number or detail that wasn't given to you.

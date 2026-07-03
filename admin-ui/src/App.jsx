@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Overview } from './pages/Overview';
 import { Sessions } from './pages/Sessions';
 import { ClientConfig } from './pages/ClientConfig';
 import { LanguagesProvider } from './languagesContext';
+import { Section } from './components/Section';
 
 function SunIcon() {
   return (
@@ -46,22 +47,40 @@ function ConfigIcon() {
   );
 }
 
-const TABS = [
-  { id: 'overview', label: 'Overview', Icon: OverviewIcon, Component: Overview, subtitle: 'Volume and quality at a glance' },
-  { id: 'sessions', label: 'Sessions', Icon: SessionsIcon, Component: Sessions, subtitle: 'Every call and chat, with full transcripts' },
-  { id: 'clients', label: 'Client Config', Icon: ConfigIcon, Component: ClientConfig, subtitle: 'Languages, fallback, and overflow behavior per account' },
+const SECTIONS = [
+  { id: 'overview', label: 'Overview', Icon: OverviewIcon, subtitle: 'Volume and quality at a glance', Component: Overview },
+  { id: 'sessions', label: 'Sessions', Icon: SessionsIcon, subtitle: 'Every call and chat, with full transcripts', Component: Sessions },
+  { id: 'clients', label: 'Client Config', Icon: ConfigIcon, subtitle: 'Languages, fallback, and overflow behavior per account', Component: ClientConfig },
 ];
 
 function App() {
-  const [activeTab, setActiveTab] = useState('overview');
   const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'light');
-  const active = TABS.find((t) => t.id === activeTab);
-  const ActiveComponent = active.Component;
+  const [activeId, setActiveId] = useState('overview');
+  const sectionRefs = useRef({});
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
     localStorage.setItem('theme', theme);
   }, [theme]);
+
+  // Scroll-spy: highlight whichever section is most visible, instead of only
+  // reacting to clicks - keeps the sidebar in sync as you scroll the page.
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries.filter((e) => e.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+        if (visible.length > 0) setActiveId(visible[0].target.id);
+      },
+      { rootMargin: '-15% 0px -70% 0px', threshold: [0, 0.25, 0.5, 0.75, 1] },
+    );
+
+    Object.values(sectionRefs.current).forEach((el) => el && observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
+
+  const scrollTo = (id) => {
+    sectionRefs.current[id]?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   return (
     <LanguagesProvider>
@@ -76,14 +95,14 @@ function App() {
           </div>
 
           <nav className="nav-list">
-            {TABS.map((tab) => (
+            {SECTIONS.map((s) => (
               <button
-                key={tab.id}
-                className={`nav-item${tab.id === activeTab ? ' active' : ''}`}
-                onClick={() => setActiveTab(tab.id)}
+                key={s.id}
+                className={`nav-item${s.id === activeId ? ' active' : ''}`}
+                onClick={() => scrollTo(s.id)}
               >
-                <tab.Icon />
-                {tab.label}
+                <s.Icon />
+                {s.label}
               </button>
             ))}
           </nav>
@@ -101,8 +120,8 @@ function App() {
         <div className="main">
           <div className="topbar">
             <div>
-              <h1 className="topbar-title">{active.label}</h1>
-              <div className="topbar-subtitle">{active.subtitle}</div>
+              <h1 className="topbar-title">Admin Dashboard</h1>
+              <div className="topbar-subtitle">Overview, sessions, and client config in one place</div>
             </div>
             <span className="live-pill">
               <span className="live-dot" />
@@ -110,8 +129,18 @@ function App() {
             </span>
           </div>
 
-          <div className="content">
-            <ActiveComponent />
+          <div className="content" style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
+            {SECTIONS.map((s) => (
+              <Section
+                key={s.id}
+                id={s.id}
+                title={s.label}
+                subtitle={s.subtitle}
+                sectionRef={(el) => (sectionRefs.current[s.id] = el)}
+              >
+                <s.Component />
+              </Section>
+            ))}
           </div>
         </div>
       </div>

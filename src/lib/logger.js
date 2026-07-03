@@ -8,6 +8,7 @@ import { readFileSync, existsSync } from 'node:fs';
 import { appendFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { LANGUAGE_NAMES } from '../config/clients.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const LOG_FILE = path.join(__dirname, '..', '..', 'logs', 'interactions.jsonl');
@@ -65,11 +66,14 @@ export function getRecentInteractions(limit = 100) {
   return recentInteractions.slice(-limit);
 }
 
+// Only counts recognized languages - interactions with no detected language,
+// or a stray/invalid code, are left out of the dashboard chart rather than
+// bucketed into an "unknown" catch-all.
 export function getLanguageVolumeSummary() {
   const summary = {};
   for (const entry of recentInteractions) {
-    const lang = entry.detectedLanguage || 'unknown';
-    summary[lang] = (summary[lang] || 0) + 1;
+    if (!entry.detectedLanguage || !(entry.detectedLanguage in LANGUAGE_NAMES)) continue;
+    summary[entry.detectedLanguage] = (summary[entry.detectedLanguage] || 0) + 1;
   }
   return summary;
 }
