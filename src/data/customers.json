@@ -1,0 +1,103 @@
+{
+  "customers": [
+    {
+      "customerId": "CUST-1001",
+      "firstName": "Maria",
+      "lastName": "Gonzalez",
+      "fullName": "Maria Gonzalez",
+      "dobYear": 1985,
+      "preferredLanguage": "es",
+      "phoneNumber": "+15557654321",
+      "loan": {
+        "loanNumber": "MTG-88213045",
+        "loanType": "30-Year Fixed",
+        "propertyAddress": "482 Willow Creek Dr, Austin, TX 78745",
+        "originalLoanAmount": 320000,
+        "currentBalance": 298450.12,
+        "interestRate": 5.875,
+        "monthlyPayment": 1893.44,
+        "status": "current",
+        "nextPaymentDueDate": "2026-08-01",
+        "lastPaymentDate": "2026-07-01",
+        "lastPaymentAmount": 1893.44,
+        "escrowBalance": 2140.55,
+        "maturityDate": "2053-06-01"
+      }
+    },
+    {
+      "customerId": "CUST-1002",
+      "firstName": "James",
+      "lastName": "Whitfield",
+      "fullName": "James Whitfield",
+      "dobYear": 1972,
+      "preferredLanguage": "en",
+      "phoneNumber": "+15557654322",
+      "loan": {
+        "loanNumber": "MTG-77190213",
+        "loanType": "15-Year Fixed",
+        "propertyAddress": "19 Birchwood Lane, Denver, CO 80203",
+        "originalLoanAmount": 410000,
+        "currentBalance": 121880.37,
+        "interestRate": 4.25,
+        "monthlyPayment": 3094.12,
+        "status": "delinquent",
+        "daysDelinquent": 42,
+        "nextPaymentDueDate": "2026-06-01",
+        "lastPaymentDate": "2026-04-28",
+        "lastPaymentAmount": 3094.12,
+        "escrowBalance": 610.20,
+        "maturityDate": "2035-03-01"
+      }
+    },
+    {
+      "customerId": "CUST-1003",
+      "firstName": "Priya",
+      "lastName": "Sharma",
+      "fullName": "Priya Sharma",
+      "dobYear": 1990,
+      "preferredLanguage": "hi",
+      "phoneNumber": "+15557654323",
+      "loan": {
+        "loanNumber": "MTG-65402198",
+        "loanType": "5/1 ARM",
+        "propertyAddress": "7734 Maple Ridge Ct, Edison, NJ 08817",
+        "originalLoanAmount": 545000,
+        "currentBalance": 519760.88,
+        "interestRate": 6.125,
+        "monthlyPayment": 3312.77,
+        "status": "current",
+        "nextPaymentDueDate": "2026-07-15",
+        "lastPaymentDate": "2026-06-15",
+        "lastPaymentAmount": 3312.77,
+        "escrowBalance": 3050.00,
+        "maturityDate": "2056-05-01",
+        "armAdjustmentDate": "2029-05-01"
+      }
+    },
+    {
+      "customerId": "CUST-1004",
+      "firstName": "David",
+      "lastName": "Okafor",
+      "fullName": "David Okafor",
+      "dobYear": 1988,
+      "preferredLanguage": "en",
+      "phoneNumber": "+15557654324",
+      "loan": {
+        "loanNumber": "MTG-90287761",
+        "loanType": "30-Year Fixed FHA",
+        "propertyAddress": "265 Sunset Grove Ave, Orlando, FL 32801",
+        "originalLoanAmount": 275000,
+        "currentBalance": 264310.55,
+        "interestRate": 6.5,
+        "monthlyPayment": 1738.02,
+        "status": "current",
+        "nextPaymentDueDate": "2026-07-20",
+        "lastPaymentDate": "2026-06-20",
+        "lastPaymentAmount": 1738.02,
+        "escrowBalance": 1420.10,
+        "maturityDate": "2054-07-01",
+        "pmiMonthly": 145.30
+      }
+    }
+  ]
+}

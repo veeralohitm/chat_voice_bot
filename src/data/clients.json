@@ -1,0 +1,14 @@
+{
+  "clients": [
+    {
+      "accountKey": "+17578216949",
+      "enabled": true,
+      "supportedLanguages": ["en", "es", "hi"],
+      "fallbackLanguage": "en",
+      "overflowBehavior": "voicemail",
+      "fluentAgentAvailable": { "en": true, "es": false, "hi": false },
+      "detectionConfidenceThreshold": 0.6,
+      "switchConfidenceThreshold": 0.75
+    }
+  ]
+}
