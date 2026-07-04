@@ -44,13 +44,28 @@ function ingestTurn({ sessionId, channel, accountKey, role, text, timestamp }) {
   session.updatedAt = timestamp;
 }
 
+// Applies a metadata patch (e.g. a recording URL that only becomes available
+// after the call ends) to a session that must already exist - if it doesn't
+// (out-of-order replay, or the call was never logged), the patch is dropped
+// rather than fabricating a session from nothing.
+function ingestMeta({ sessionId, ...patch }) {
+  const session = sessions.get(sessionId);
+  if (!session) return;
+  Object.assign(session, patch);
+}
+
 function loadFromDisk() {
   if (!existsSync(LOG_FILE)) return;
   try {
     const lines = readFileSync(LOG_FILE, 'utf-8').split('\n').filter(Boolean);
     for (const line of lines) {
       try {
-        ingestTurn(JSON.parse(line));
+        const parsed = JSON.parse(line);
+        if (parsed.type === 'meta') {
+          ingestMeta(parsed);
+        } else {
+          ingestTurn(parsed);
+        }
       } catch {
         // skip a malformed line rather than fail startup over it
       }
@@ -75,6 +90,22 @@ export async function recordTurn({ sessionId, channel, accountKey, role, text })
     await appendFile(LOG_FILE, JSON.stringify({ sessionId, channel, accountKey, ...turn }) + '\n');
   } catch (err) {
     console.error('[transcriptStore] failed to write transcript log:', err.message);
+  }
+}
+
+// Attaches metadata that arrives after the fact - currently just the call
+// recording URL/duration, which Twilio only sends once the recording is done
+// (well after the session itself was created from the first transcript turn).
+export async function updateSessionMeta(sessionId, patch) {
+  const session = sessions.get(sessionId);
+  if (!session) return;
+
+  Object.assign(session, patch);
+
+  try {
+    await appendFile(LOG_FILE, JSON.stringify({ type: 'meta', sessionId, ...patch }) + '\n');
+  } catch (err) {
+    console.error('[transcriptStore] failed to write session meta log:', err.message);
   }
 }
 

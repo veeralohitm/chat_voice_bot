@@ -18,6 +18,7 @@ function CloseIcon() {
 function TranscriptPanel({ sessionId, onClose }) {
   const [session, setSession] = useState(null);
   const [error, setError] = useState(null);
+  const [recordingFailed, setRecordingFailed] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -64,6 +65,24 @@ function TranscriptPanel({ sessionId, onClose }) {
         {!session && !error && (
           <div className="loading-row">
             <span className="spinner" /> Loading…
+          </div>
+        )}
+
+        {session?.channel === 'voice' && (
+          <div style={{ marginBottom: 16 }}>
+            {recordingFailed ? (
+              <div className="muted" style={{ fontSize: 12 }}>
+                No recording found for this call yet - it can take a minute after the call ends, or recording may not
+                be enabled for this account.
+              </div>
+            ) : (
+              <audio
+                controls
+                style={{ width: '100%', height: 36 }}
+                src={api.recordingUrlFor(sessionId)}
+                onError={() => setRecordingFailed(true)}
+              />
+            )}
           </div>
         )}
 

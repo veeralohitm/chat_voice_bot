@@ -30,8 +30,13 @@
   --radius-lg: 14px;
 
   --shadow-sm: 0 1px 2px rgba(14, 17, 22, 0.04);
-  --shadow-md: 0 4px 16px rgba(14, 17, 22, 0.06);
-  --shadow-lg: 0 12px 32px rgba(14, 17, 22, 0.1);
+  --shadow-md: 0 8px 24px rgba(14, 17, 22, 0.07);
+  --shadow-lg: 0 16px 40px rgba(14, 17, 22, 0.12);
+
+  --glass-surface: rgba(255, 255, 255, 0.6);
+  --glass-surface-strong: rgba(255, 255, 255, 0.8);
+  --glass-border: rgba(255, 255, 255, 0.7);
+  --glass-blur: blur(20px) saturate(180%);
 
   --sidebar-width: 232px;
 
@@ -68,8 +73,13 @@
   --series-3: #c98500;
 
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.36);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.4);
   --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.5);
+
+  --glass-surface: rgba(28, 29, 33, 0.6);
+  --glass-surface-strong: rgba(28, 29, 33, 0.82);
+  --glass-border: rgba(255, 255, 255, 0.09);
+  --glass-blur: blur(20px) saturate(180%);
 
   color-scheme: dark;
 }
@@ -88,6 +98,28 @@ body {
   background: var(--page-plane);
   color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
+}
+
+/* Fixed gradient mesh behind everything - gives the glass surfaces above
+   something to actually blur/reveal, instead of blurring flat gray. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(900px 520px at 8% -5%, rgba(42, 120, 214, 0.14), transparent 60%),
+    radial-gradient(700px 480px at 92% 15%, rgba(27, 175, 122, 0.1), transparent 55%),
+    radial-gradient(760px 560px at 45% 105%, rgba(237, 161, 0, 0.08), transparent 55%),
+    var(--page-plane);
+}
+
+[data-theme='dark'] body::before {
+  background:
+    radial-gradient(900px 520px at 8% -5%, rgba(57, 135, 229, 0.16), transparent 60%),
+    radial-gradient(700px 480px at 92% 15%, rgba(25, 158, 112, 0.12), transparent 55%),
+    radial-gradient(760px 560px at 45% 105%, rgba(201, 133, 0, 0.1), transparent 55%),
+    var(--page-plane);
 }
 
 #root {
@@ -119,8 +151,10 @@ table {
 .sidebar {
   width: var(--sidebar-width);
   flex-shrink: 0;
-  background: var(--surface-1);
-  border-right: 1px solid var(--border);
+  background: var(--glass-surface);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-right: 1px solid var(--glass-border);
   padding: 20px 14px;
   display: flex;
   flex-direction: column;
@@ -128,6 +162,7 @@ table {
   position: sticky;
   top: 0;
   height: 100vh;
+  z-index: 10;
 }
 
 .brand {
@@ -216,8 +251,10 @@ table {
   align-items: center;
   justify-content: space-between;
   padding: 20px 32px;
-  border-bottom: 1px solid var(--border);
-  background: var(--surface-1);
+  border-bottom: 1px solid var(--glass-border);
+  background: var(--glass-surface);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
   position: sticky;
   top: 0;
   z-index: 5;
@@ -262,10 +299,19 @@ table {
 /* ---------- primitives ---------- */
 
 .card {
-  background: var(--surface-1);
-  border: 1px solid var(--border);
+  background: var(--glass-surface);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-md);
+  transition:
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.card:hover {
+  box-shadow: var(--shadow-lg);
 }
 
 .card-pad {

@@ -18,6 +18,8 @@ export const api = {
   getInteractions: (limit = 100) => request(`/reports/interactions?limit=${limit}`),
   getSessions: () => request('/reports/sessions'),
   getSessionTranscript: (sessionId) => request(`/reports/sessions/${encodeURIComponent(sessionId)}`),
+  // A URL, not a fetch call - handed straight to an <audio> tag's src.
+  recordingUrlFor: (sessionId) => `${BASE_URL}/reports/sessions/${encodeURIComponent(sessionId)}/recording`,
   getClients: () => request('/admin/clients'),
   updateClient: (accountKey, patch) =>
     request(`/admin/clients/${encodeURIComponent(accountKey)}`, {

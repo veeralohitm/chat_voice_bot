@@ -1,6 +1,6 @@
 export function StatTile({ label, value, icon }) {
   return (
-    <div className="card card-pad" style={{ flex: '1 1 180px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+    <div className="card card-pad" style={{ flex: '1 1 180px', display: 'flex', flexDirection: 'column', gap: 12 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <span className="muted" style={{ fontSize: 12.5 }}>
           {label}
@@ -8,11 +8,12 @@ export function StatTile({ label, value, icon }) {
         {icon && (
           <span
             style={{
-              width: 26,
-              height: 26,
-              borderRadius: 7,
-              background: 'var(--sequential-wash)',
-              color: 'var(--sequential)',
+              width: 28,
+              height: 28,
+              borderRadius: 8,
+              background: `linear-gradient(135deg, var(--sequential), var(--sequential-hover))`,
+              boxShadow: '0 4px 12px rgba(42, 120, 214, 0.3)',
+              color: '#fff',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',

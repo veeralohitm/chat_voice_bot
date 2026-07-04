@@ -10,7 +10,14 @@ import { findCustomer, toPublicLoanRecord, isPlausibleDobYear } from '../lib/cus
 // onEndCall lets the caller of buildVoiceTools (voice.js) supply the actual
 // "hang up the phone" behavior, since that requires access to the Twilio
 // socket, which this module intentionally doesn't know about.
-export function buildVoiceTools({ accountKey, sessionId, clientConfig, onEndCall }) {
+//
+// sessionContext is a shared mutable object ({ sessionId }), not a plain
+// string - the real Twilio CallSid only becomes known slightly after the
+// agent/tools are built (it arrives on the Media Stream's native "start"
+// event), so voice.js updates sessionContext.sessionId in place once it
+// has it. Tools read it fresh at execute() time rather than closing over
+// a snapshot, so every log entry after that point uses the real CallSid.
+export function buildVoiceTools({ accountKey, sessionContext, clientConfig, onEndCall }) {
   const reportLanguage = tool({
     name: 'report_language',
     description:
@@ -27,7 +34,7 @@ export function buildVoiceTools({ accountKey, sessionId, clientConfig, onEndCall
       await logInteraction({
         channel: 'voice',
         accountKey,
-        sessionId,
+        sessionId: sessionContext.sessionId,
         detectedLanguage: languageCode,
         confidence,
         override: source === 'override',
@@ -60,7 +67,7 @@ export function buildVoiceTools({ accountKey, sessionId, clientConfig, onEndCall
       await logInteraction({
         channel: 'voice',
         accountKey,
-        sessionId,
+        sessionId: sessionContext.sessionId,
         detectedLanguage: languageCode,
         confidence: null,
         escalated: true,
@@ -95,7 +102,7 @@ export function buildVoiceTools({ accountKey, sessionId, clientConfig, onEndCall
         await logInteraction({
           channel: 'voice',
           accountKey,
-          sessionId,
+          sessionId: sessionContext.sessionId,
           note: `identity_verification=implausible_dob_year name="${fullName}" dobYear=${dobYear}`,
         });
         return {
@@ -110,7 +117,7 @@ export function buildVoiceTools({ accountKey, sessionId, clientConfig, onEndCall
       await logInteraction({
         channel: 'voice',
         accountKey,
-        sessionId,
+        sessionId: sessionContext.sessionId,
         note: `identity_verification=${match ? 'success' : 'failed'} name="${fullName}"`,
       });
 
